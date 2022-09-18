@@ -1,11 +1,18 @@
 public class Player {
+
     private int playerNumber;
     private int playerType;
 
+    /**
+     * constructor
+     * @param playerNumber
+     * @param playerType
+     */
     public Player(int playerNumber, int playerType){
         this.playerNumber = playerNumber;
         this.playerType = playerType;
     }
+
 
     public void setPlayerNumber(int playerNumber) {
         this.playerNumber = playerNumber;
@@ -22,4 +29,6 @@ public class Player {
     public int getPlayerType() {
         return playerType;
     }
+
+    
 }
