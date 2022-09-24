@@ -1,34 +1,28 @@
+// Player class to create player objects and store their information
+
 public class Player {
+    private int pNumber;
+    private int pScore;
 
-    private int playerNumber;
-    private int playerType;
-
-    /**
-     * constructor
-     * @param playerNumber
-     * @param playerType
-     */
-    public Player(int playerNumber, int playerType){
-        this.playerNumber = playerNumber;
-        this.playerType = playerType;
+    public Player(int number) {
+        pNumber = number;
+        pScore = 0;
     }
 
-
-    public void setPlayerNumber(int playerNumber) {
-        this.playerNumber = playerNumber;
+    public void setPlayer(int num) {
+        pNumber = num;
     }
 
-    public void setPlayerType(int playerType) {
-        this.playerType = playerType;
+    public void setScore(int score) {
+        pScore = score;
     }
 
-    public int getPlayerNumber() {
-        return playerNumber;
+    public int getNumber() {
+        return pNumber;
     }
 
-    public int getPlayerType() {
-        return playerType;
+    public int getScore() {
+        return pScore;
     }
 
-    
 }
