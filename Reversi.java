@@ -2,7 +2,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.lang.Exception;
-// import the MiniMaxAlg class
+
 
 public class Reversi {
     private Player player1; // always ai
@@ -226,6 +226,90 @@ public class Reversi {
         }
         return v;
     }
+    // the utility function for minimaxH will return an int of how mnay pieces are on the board
+    // for each player, and then subtract the number of pieces for the opponent from the number of pieces for the player
+    // and return that value of p1 - p2 (p1 is the player, p2 is the opponent)
+    public int UtilityH (State s, Player p1, Player p2) {
+        int p1Counter = p1.getNumber();
+        int p2Counter = p2.getNumber();
+        for (int i = 0; i < s.getBoard().length; i++) {
+            for (int j = 0; j < s.getBoard().length; j++) {
+                if (s.getBoard()[i][j] == 1)
+                    p1Counter++;  
+                else if (s.getBoard()[i][j] == 2)
+                    p2Counter++;
+            }
+        }
+        // check corner pieces and give 2 extra points for each corner piece
+        if (s.getBoard()[0][0] == 1)
+            p1Counter += 2;
+        else if (s.getBoard()[0][0] == 2)
+            p2Counter += 2;
+        else if (s.getBoard()[0][s.getBoard().length - 1] == 1)
+            p1Counter += 2;
+        else if (s.getBoard()[0][s.getBoard().length - 1] == 2)
+            p2Counter += 2;
+        else if (s.getBoard()[s.getBoard().length - 1][0] == 1)
+            p1Counter += 2;
+        else if (s.getBoard()[s.getBoard().length - 1][0] == 2)
+            p2Counter += 2;
+        else if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 1)
+            p1Counter += 2;
+        else if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 2)
+            p2Counter += 2;
+        
+        // check for edge pieces 
+        for (int i = 0; i < s.getBoard().length; i++) {
+            if (s.getBoard()[0][i] == 1)
+                p1Counter++;
+            else if (s.getBoard()[0][i] == 2)
+                p2Counter++;
+            else if (s.getBoard()[s.getBoard().length - 1][i] == 1)
+                p1Counter++;
+            else if (s.getBoard()[s.getBoard().length - 1][i] == 2)
+                p2Counter++;
+            else if (s.getBoard()[i][0] == 1)
+                p1Counter++;
+            else if (s.getBoard()[i][0] == 2)
+                p2Counter++;
+            else if (s.getBoard()[i][s.getBoard().length - 1] == 1)
+                p1Counter++;
+            else if (s.getBoard()[i][s.getBoard().length - 1] == 2)
+                p2Counter++;
+        }
+        return p1Counter - p2Counter;
+    }
+    // implement minimax algorithm with depth limit 
+    public State minimaxH(State s, int depth) {
+        return miniMaxHHelper(s, 0, depth); 
+    }
+
+    public State miniMaxHHelper(State s, int depthAt, int depth) {
+        ArrayList<State> actions = getActions(s, s.getPlayer());
+        int max = Integer.MIN_VALUE;
+        State move = s;
+        for (State bruh : actions) {
+            int val = minH(bruh, depthAt++, depth);
+            if (val > max) {
+                max = val;
+                move = bruh;
+            }
+        }
+        return move;
+    }
+
+    public int minH(State s, int depthAt, int depth) {
+        int v = Integer.MAX_VALUE;
+        if (s.isTerminal() || depthAt == depth)
+            return UtilityH(s, s.getPlayer(), s.getOpponent());
+        ArrayList<State> actions = getActions(s, s.getPlayer());
+        for (State bruh : actions) {
+            Integer.max(maxH(bruh, depthAt++, depth), v);
+        }
+        return v;
+    }
+
+    
     public static void main(String[] args) {
         Player p1 = new Player(1);
         Player p2 = new Player(2);
