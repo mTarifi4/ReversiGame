@@ -98,6 +98,12 @@ public class State {
         return turn;
     }
 
+    public Player getOpponent() {
+        if(turn.getNumber() == 1) 
+            return new Player(0);
+        else return new Player(1);    
+    }
+
     public void setPlayer(Player p) {
         turn = p;
     }
