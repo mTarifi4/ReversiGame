@@ -160,7 +160,7 @@ public class Reversi {
         return board;
     }
 
-    public static ArrayList<State> getActions(State s, Player p) {
+    public ArrayList<State> getActions(State s, Player p) {
         ArrayList<State> actions = new ArrayList<State>();
         for (int i = 0; i < s.getBoard().length; i++)
             for (int j = 0; j < s.getBoard()[0].length; j++)
@@ -403,6 +403,84 @@ public class Reversi {
         } 
         return v;  
     }
+
+
+
+    public void runMiniMaxComputer(Reversi board) {
+        while(true) {
+
+
+        }
+    }
+
+    public void runMiniMaxHuman(Reversi board) {
+        Scanner scanner = new Scanner(System.in);
+        while(!board.getGameState().isTerminal()) {
+            board.getGameState().drawState();
+            if(board.getActions(board.getGameState(), board.getGameState().getPlayer()).isEmpty() && !board.getGameState().isTerminal()) {
+                System.out.println("There are no legal moves so you must pass");
+                if(board.getGameState().getPlayer().getNumber() == 1) 
+                    board.getGameState().setPlayer(new Player(2));
+                else 
+                    board.getGameState().setPlayer(new Player(1));
+
+            } else {
+                System.out.println("Please enter an x and y for your move starting with 0"); 
+                int x = scanner.nextInt();
+                int y = scanner.nextInt();
+                if(x < board.getGameState().getBoard().length && x >= 0 && y >= 0 && y <= board.getGameState().getBoard()[0].length) {
+                    board.setState(board.makeMove(board.getGameState(), x, y, board.player1));
+                } else {
+                    System.out.println("Your move was invalid");
+                }    
+                if(board.getActions(board.getGameState(), board.getGameState().getPlayer()).isEmpty() && !board.getGameState().isTerminal()) {
+                    System.out.println("There are no legal moves so you must pass");
+                    if(board.getGameState().getPlayer().getNumber() == 1) 
+                        board.getGameState().setPlayer(new Player(2));
+                    else 
+                        board.getGameState().setPlayer(new Player(1));
+        
+                } else {
+                    board.setState(minimax(board.getGameState()));
+                }
+            }
+        }
+        if(board.getGameState().is)
+
+    }
+
+    public void runHueristicAlphaBeta(Reversi board) {
+
+    }
+
+    public void run() {
+        Player player = new Player(1);
+        Player computer = new Player(2);
+        Scanner scanner = new Scanner(System.in);
+        Reversi game = null;
+        // beginning of repl
+        while(true) {
+            System.out.println("Choose your game: \n 1. Small 4x4 Reversi \n 2. Medium 6x6 Reversi \n 3. Standard 8x8 Reversi \n");
+            System.out.print("Your Choice: ");
+            int size = scanner.nextInt();
+            System.out.println("Choose your opponent: \n 1. An Agent that uses Minimax to choose the optimal move \n 2. An agent that uses H-Minimax with fixed deptth cutoff and A B Pruning\n");
+            System.out.print("Your Choice: ");
+            int opponent = scanner.nextInt();
+            System.out.println("Choose if you go first or second: \n 1. One for first \n 2. Two for second");
+            int turn = scanner.nextInt();
+            if(size == 1) {
+                if(opponent == 1) {
+                    game = new Reversi(computer, player, 4);
+                    if(turn == 1) 
+                        runMiniMaxHuman(game);
+                    
+
+                }
+            }
+            
+
+        }  
+    } 
 
     public static void main(String[] args) {
         Player p1 = new Player(1);
