@@ -1,458 +1,255 @@
-// To Do 
-// handle illegal moves from user 
-// create random player 
-// fix interaction with user ( use his input and output format)
+// of Reversi.  The state is represented by a 2D array 
+// of integers.  The integers represent the tiles on the
+// board.  The integers are 0 for empty, 1 for black,
+// and 2 for white.  The board is 8x8. 
 
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.lang.Exception;
-// import the MiniMaxAlg class
+import java.util.Arrays;
 
-public class Reversi {
-    private Player player1; // always ai
-    private Player player2; // always player
-    private State state;
+public class State {
+    // The board is represented by a 2D array of integers.
+    private int[][] board;
+    // turn is 1 for black and 2 for white.
+    private Player turn;
 
-    public Reversi(Player p1, Player p2, int size) {
-        player1 = p1;
-        player2 = p2;
-        state = new State(size);
-    }
-
-    public State getGameState() {
-        return state;
-    }
-
-    public void setState(State tarifiSuckMyCock) {
-        state = tarifiSuckMyCock;
-    }
-
-    public static State makeMove(State state, int row, int col, Player player) {
-        State board = new State(state.getBoard(), player);
-        if (board.isLegalMove(row, col, player)) {
-            // search east
-            if (col + 1 < board.getBoard()[row].length && board.getBoard()[row][col + 1] != 0
-                    && board.getBoard()[row][col + 1] != player.getNumber()) {
-                for (int i = col + 1; i < board.getBoard()[row].length && board.getBoard()[row][i] != 0; i++) {
-                    if (board.getBoard()[row][i] == player.getNumber()) {
-                        for (int j = i; j >= col; j--)
-                            board.getBoard()[row][j] = player.getNumber();
-                        break;
-                    }
-                }
-
+    /**
+     * initializes starting board given a size
+     * 
+     * @param boardsize size of board
+     */
+    public State(int boardSize) {
+        this.board = new int[boardSize][boardSize];
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                this.board[i][j] = 0;
             }
-
-            // search west
-            if (col - 1 >= 0 && board.getBoard()[row][col - 1] != 0
-                    && board.getBoard()[row][col - 1] != player.getNumber()) {
-                for (int i = col - 1; i >= 0 && board.getBoard()[row][i] != 0; i--) {
-                    if (board.getBoard()[row][i] == player.getNumber()) {
-                        for (int j = i; j <= col; j++)
-                            board.getBoard()[row][j] = player.getNumber();
-                        break;
-                    }
-                }
-
-            }
-
-            // search north
-            if (row - 1 >= 0 && board.getBoard()[row - 1][col] != 0
-                    && board.getBoard()[row - 1][col] != player.getNumber()) {
-                for (int i = row - 1; i >= 0 && board.getBoard()[i][col] != 0; i--) {
-                    if (board.getBoard()[i][col] == player.getNumber()) {
-                        for (int j = i; j <= row; j++)
-                            board.getBoard()[j][col] = player.getNumber();
-                        break;
-                    }
-                }
-            }
-
-            // search south
-            if (row + 1 < board.getBoard().length && board.getBoard()[row + 1][col] != 0
-                    && board.getBoard()[row + 1][col] != player.getNumber()) {
-                for (int i = row + 1; i < board.getBoard().length && board.getBoard()[i][col] != 0; i++) {
-                    if (board.getBoard()[i][col] == player.getNumber()) {
-                        for (int j = i; j >= row; j--)
-                            board.getBoard()[j][col] = player.getNumber();
-                        break;
-                    }
-                }
-            }
-
-            // search northwest
-            if (row - 1 >= 0 && col - 1 >= 0 && board.getBoard()[row - 1][col - 1] != 0
-                    && board.getBoard()[row - 1][col - 1] != player.getNumber()) {
-                int i = row - 1;
-                int j = col - 1;
-                while (i >= 0 && j >= 0 && board.getBoard()[i][j] != 0) {
-                    if (board.getBoard()[i][j] == player.getNumber()) {
-                        while (i <= row && j <= col) {
-                            board.getBoard()[i][j] = player.getNumber();
-                            i++;
-                            j++;
-                        }
-                        break;
-                    }
-                    i--;
-                    j--;
-                }
-            }
-
-            // search northeast
-            if (row - 1 >= 0 && col + 1 < board.getBoard()[row].length && board.getBoard()[row - 1][col + 1] != 0
-                    && board.getBoard()[row - 1][col + 1] != player.getNumber()) {
-                int i = row - 1;
-                int j = col + 1;
-                while (i >= 0 && j < board.getBoard()[0].length && board.getBoard()[i][j] != 0) {
-                    if (board.getBoard()[i][j] == player.getNumber()) {
-                        while (i <= row && j >= col) {
-                            board.getBoard()[i][j] = player.getNumber();
-                            i++;
-                            j--;
-                        }
-                        break;
-                    }
-                    i--;
-                    j++;
-                }
-            }
-
-            // search southeast
-            if (row + 1 < board.getBoard().length && col + 1 < board.getBoard()[0].length
-                    && board.getBoard()[row + 1][col + 1] != 0
-                    && board.getBoard()[row + 1][col + 1] != player.getNumber()) {
-                int i = row + 1;
-                int j = col + 1;
-                while (i < board.getBoard().length && j < board.getBoard()[0].length && board.getBoard()[i][j] != 0) {
-                    if (board.getBoard()[i][j] == player.getNumber()) {
-                        while (i >= row && j >= col) {
-                            board.getBoard()[i][j] = player.getNumber();
-                            i--;
-                            j--;
-                        }
-                        break;
-                    }
-                    i++;
-                    j++;
-                }
-            }
-
-            // search southwest
-            if (row + 1 < board.getBoard().length && col - 1 >= 0 && board.getBoard()[row + 1][col - 1] != 0
-                    && board.getBoard()[row + 1][col - 1] != player.getNumber()) {
-                int i = row + 1;
-                int j = col - 1;
-                while (i < board.getBoard().length && j >= 0 && board.getBoard()[i][j] != 0) {
-                    if (board.getBoard()[i][j] == player.getNumber()) {
-                        while (i >= row && j <= col) {
-                            board.getBoard()[i][j] = player.getNumber();
-                            i--;
-                            j++;
-                        }
-                        break;
-                    }
-                    i++;
-                    j--;
-                }
-            }
-            if (player.getNumber() == 1)
-                board.setPlayer(new Player(2));
-            else
-                board.setPlayer(new Player(1));
-            return board;
         }
+
+        // sets initial pos
+        int middleOfB = boardSize / 2;
+        board[middleOfB][middleOfB] = 1;
+        board[middleOfB][middleOfB - 1] = 2;
+        board[middleOfB - 1][middleOfB] = 2;
+        board[middleOfB - 1][middleOfB - 1] = 1;
+
+        // set turn to white first
+        turn = new Player(1);
+    }
+
+    /**
+     * State constructor that takes in a board and a turn
+     * 
+     * @param pos
+     * @param p
+     */
+    public State(int[][] pos, Player p) {
+        int[][] copyBoard = new int[pos.length][pos[0].length];
+        for (int i = 0; i < pos.length; i++)
+            copyBoard[i] = Arrays.copyOf(pos[i], pos.length);
+        board = copyBoard;
+        turn = p;
+    }
+
+    /**
+     * returns the board
+     * 
+     * @return
+     */
+    public int[][] getBoard() {
         return board;
     }
 
-    public static ArrayList<State> getActions(State s, Player p) {
-        ArrayList<State> actions = new ArrayList<State>();
-        for (int i = 0; i < s.getBoard().length; i++)
-            for (int j = 0; j < s.getBoard()[0].length; j++)
-                if (s.isLegalMove(i, j, p))
-                    actions.add(makeMove(s, i, j, p));
-        return actions;
+    /**
+     * returns the tile at a given position
+     * 
+     * @param row
+     * @param col
+     * @return
+     */
+    public int getBoardAt(int row, int col) {
+        if (row > 0 && col > 0 && row < board.length && col < board[0].length)
+            return board[row][col];
+        return -1;
     }
-    public int Utility(State s) {
-        if (s.isTerminal()) {
-            int whiteCounter = 0;
-            int blackCounter = 0;
-            for (int i = 0; i < s.getBoard().length; i++) {
-                for (int j = 0; j < s.getBoard().length; j++) {
-                    if (s.getBoard()[i][j] == 1)
-                        whiteCounter++;
-                    else if (s.getBoard()[i][j] == 2)
-                        blackCounter++;
+
+    /**
+     * sets the tile at a given position
+     * 
+     * @param row
+     * @param col
+     * @param p
+     */
+    public void setBoardAt(int row, int col, Player p) {
+        if (row > 0 && col > 0 && row < board.length && col < board[0].length)
+            board[row][col] = p.getNumber();
+        else
+            System.out.println("You fucked up");
+    }
+
+    /**
+     * 
+     * @param pos
+     */
+    public void setBoard(int[][] pos) {
+        board = pos;
+    }
+
+    public Player getPlayer() {
+        return turn;
+    }
+
+    public Player getOpponent() {
+        if(turn.getNumber() == 1) 
+            return new Player(0);
+        else return new Player(1);    
+    }
+
+    public void setPlayer(Player p) {
+        turn = p;
+    }
+
+    /**
+     * 
+     * @param row
+     * @param col
+     * @return
+     * 
+     */
+    public boolean isLegalMove(int row, int col, Player player) {
+
+        if (board[row][col] != 0)
+            return false;
+
+        if (col + 1 < board[row].length && board[row][col + 1] != 0 && board[row][col + 1] != player.getNumber()) {
+            for (int i = col + 1; i < board[row].length && board[row][i] != 0; i++) {
+                if (board[row][i] == player.getNumber())
+                    return true;
+            }
+        }
+
+        if (col - 1 >= 0 && board[row][col - 1] != 0 && board[row][col - 1] != player.getNumber()) {
+            for (int i = col - 1; i >= 0 && board[row][i] != 0; i--) {
+                if (board[row][i] == player.getNumber())
+                    return true;
+            }
+        }
+
+        if (row - 1 >= 0 && board[row - 1][col] != 0 && board[row - 1][col] != player.getNumber()) {
+            for (int i = row - 1; i >= 0 && board[i][col] != 0; i--) {
+                if (board[i][col] == player.getNumber()) {
+                    return true;
                 }
             }
-            if (whiteCounter > blackCounter)
-                return 1;
-            else if (whiteCounter < blackCounter)
-                return -1;
-            else if (whiteCounter == blackCounter)
-                return 0;
         }
-        return 0;
-    }
 
-    public State minimax(State s) {
-        ArrayList<State> actions = getActions(s, s.getPlayer());
-        int max = Integer.MIN_VALUE;
-        State move = s;
-        for(State state: actions) {
-            int val = min(state);
-            if(val > max) {
-                max = val;
-                move = state;
+        if (row + 1 < board.length && board[row + 1][col] != 0 && board[row + 1][col] != player.getNumber()) {
+            for (int i = row + 1; i < board.length && board[i][col] != 0; i++) {
+                if (board[i][col] == player.getNumber())
+                    return true;
             }
         }
-        return move;
-    }
 
-    public int min(State s) {
-        int v = Integer.MAX_VALUE;
-        if (s.isTerminal())
-            return Utility(s);
-        ArrayList<State> actions = getActions(s, s.getPlayer());
-        for (State state : actions) {
-            v = Integer.min(max(state), v);
-        }
-        return v;
-    }
-
-    public int max(State s) {
-        int v = Integer.MIN_VALUE;
-        if (s.isTerminal())
-            return Utility(s);
-        ArrayList<State> actions = getActions(s, s.getPlayer());
-        for (State bruh : actions) {
-            v = Integer.max(min(bruh), v);
-        }
-        return v;
-    }
-
-    public int UtilityH (State s, Player p1, Player p2) {
-        int p1Counter = 0;
-        int p2Counter = 0;
-
-        // for every piece give 50 points to the player that owns it 
-        for (int i = 0; i < s.getBoard().length; i++) {
-            for (int j = 0; j < s.getBoard().length; j++) {
-                if (s.getBoard()[i][j] == p1.getNumber())
-                    p1Counter += 100;
-                else if (s.getBoard()[i][j] == p2.getNumber())
-                    p2Counter += 100;
+        if (row - 1 >= 0 && col - 1 >= 0 && board[row - 1][col - 1] != 0
+                && board[row - 1][col - 1] != player.getNumber()) {
+            int i = row - 1;
+            int j = col - 1;
+            while (i >= 0 && j >= 0 && board[i][j] != 0) {
+                if (board[i][j] == player.getNumber()) {
+                    return true;
+                }
+                i--;
+                j--;
             }
         }
-        // check the second layer of the board and takes a point off for every piece 
-        // that is the player's piece
-        
-        for (int j = 1; j < s.getBoard().length -1 ; j++) {
-            int i = 1;
-            if (s.getBoard()[i][j] == p1.getNumber())
-                p1Counter -= 750;
-            else if (s.getBoard()[i][j] == p2.getNumber())
-                p2Counter -= 750;
-        }
-        
-        // check the second to last layer of the board and takes a point off for every piece
-        // that is the player's piece
-       
-        for (int j = 1; j < s.getBoard().length - 1; j++) {
-                int i = s.getBoard().length - 2;
-                if (s.getBoard()[i][j] == p1.getNumber())
-                    p1Counter -= 750;
-                else if (s.getBoard()[i][j] == p2.getNumber())
-                    p2Counter -= 750;
-            }
-        
-        // check the second layer of the board and takes a point off for every piece
-        // that is the player's piece
-        for (int i = 1; i < s.getBoard().length - 1; i++) {
-            int j = 1; 
-            if (s.getBoard()[i][j] == p1.getNumber())
-                p1Counter -= 750;
-            else if (s.getBoard()[i][j] == p2.getNumber())
-                p2Counter -= 750;
-            
-        }
-        // check the second to last layer of the board and takes a point off for every piece
-        // that is the player's piece
-        for (int i = 1; i < s.getBoard().length - 1; i++) {
-            int j = s.getBoard().length - 2;
-            if (s.getBoard()[i][j] == p1.getNumber())
-                p1Counter -= 750;
-            else if (s.getBoard()[i][j] == p2.getNumber())
-                p2Counter -= 750;
-        }
-        // check corner pieces and give 2 extra points for each corner piece
-        if (s.getBoard()[0][0] == 1)
-            p1Counter += 2500;
-        if (s.getBoard()[0][0] == 2)
-            p2Counter += 2500;
-        if (s.getBoard()[0][s.getBoard().length - 1] == 1)
-            p1Counter += 2500;
-        if (s.getBoard()[0][s.getBoard().length - 1] == 2)
-            p2Counter += 2500;
-        if (s.getBoard()[s.getBoard().length - 1][0] == 1)
-            p1Counter += 2500;
-        if (s.getBoard()[s.getBoard().length - 1][0] == 2)
-            p2Counter += 2500;
-        if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 1)
-            p1Counter += 2500;
-        if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 2)
-            p2Counter += 2500;
-        
-        // check for edge pieces 
-        for (int i = 0; i < s.getBoard().length; i++) {
-            if (s.getBoard()[0][i] == 1)
-                p1Counter += 200;
-            if (s.getBoard()[0][i] == 2)
-                p2Counter += 200;
-            if (s.getBoard()[s.getBoard().length - 1][i] == 1)
-                p1Counter += 200;
-            if (s.getBoard()[s.getBoard().length - 1][i] == 2)
-                p2Counter += 200;
-            if (s.getBoard()[i][0] == 1)
-                p1Counter += 200;
-            if (s.getBoard()[i][0] == 2)
-                p2Counter += 200;
-            if (s.getBoard()[i][s.getBoard().length - 1] == 1)
-                p1Counter += 200;
-            if (s.getBoard()[i][s.getBoard().length - 1] == 2)
-                p2Counter += 200;
-        }
-        return p1Counter - p2Counter;
-    }
-    //implement minimax algorithm with depth limit 
-    public State minimaxH(State s, int depth) {
-        return miniMaxHHelper(s, 0, depth, Integer.MIN_VALUE, Integer.MAX_VALUE); 
-    }
-    // function utilityHTerminal (s, p1, p2) returns the score of the state s for the player p1
-    public int utilityHTerminal (State s, Player p1, Player p2){
-        int p1Counter = 0;
-        int p2Counter = 0;
 
-       
-        for (int i = 0; i < s.getBoard().length; i++) {
-            for (int j = 0; j < s.getBoard().length; j++) {
-                if (s.getBoard()[i][j] == p1.getNumber())
-                    p1Counter += 1;
-                else if (s.getBoard()[i][j] == p2.getNumber())
-                    p2Counter += 1;
+        if (row - 1 >= 0 && col + 1 < board[row].length && board[row - 1][col + 1] != 0
+                && board[row - 1][col + 1] != player.getNumber()) {
+            int i = row - 1;
+            int j = col + 1;
+            while (i >= 0 && j < board[0].length && board[i][j] != 0) {
+                if (board[i][j] == player.getNumber()) {
+                    return true;
+                }
+                i--;
+                j++;
             }
         }
-        return 10000 * (p1Counter - p2Counter);
-    }
 
-    public State miniMaxHHelper(State s, int depthAt, int depth, int alpha, int beta) {
-        ArrayList<State> actions = getActions(s, s.getPlayer());
-        int max = Integer.MIN_VALUE;
-        State move = s;
-        for (State state : actions) {
-            int val = minH(state, depthAt++, depth, alpha, beta);
-            if (val > max) {
-                max = val;
-                move = state;
+        if (row + 1 < board.length && col + 1 < board[0].length && board[row + 1][col + 1] != 0
+                && board[row + 1][col + 1] != player.getNumber()) {
+            int i = row + 1;
+            int j = col + 1;
+            while (i < board.length && j < board[0].length && board[i][j] != 0) {
+                if (board[i][j] == player.getNumber()) {
+                    return true;
+                }
+                i++;
+                j++;
             }
         }
-        return move;
+
+        if (row + 1 < board.length && col - 1 >= 0 && board[row + 1][col - 1] != 0
+                && board[row + 1][col - 1] != player.getNumber()) {
+            int i = row + 1;
+            int j = col - 1;
+            while (i < board.length && j >= 0 && board[i][j] != 0) {
+                if (board[i][j] == player.getNumber()) {
+                    return true;
+                }
+                i++;
+                j--;
+            }
+        }
+        return false;
     }
 
-    public int minH(State s, int depthAt, int depth, int alpha, int beta) {
-        int v = Integer.MAX_VALUE;
-        if (s.isTerminal() ){
-            return utilityHTerminal(s, s.getPlayer(), s.getOpponent());
+    /**
+     * draw the board
+     */
+    public void drawState() {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                System.out.printf("%d  ", board[i][j]);
+            }
+            System.out.println("\n");
         }
-        else if(depthAt >= depth){
-            return UtilityH(s, s.getPlayer(), s.getOpponent());
-        }
-        ArrayList<State> actions = getActions(s, s.getPlayer());
-        for (State state : actions) {
-            v = Integer.min(maxH(state, depthAt++, depth, alpha, beta), v);
-            if(v <= alpha)
-                return v;
-            beta = Integer.min(beta, v);
-            
-        }
-        return v;
-        // int v = Integer.MAX_VALUE;
-        // if (s.isTerminal() || depthAt >= depth)
-        //     return UtilityH(s, s.getPlayer(), s.getOpponent());
-        // ArrayList<State> actions = getActions(s, s.getPlayer());
-        // for (State state : actions) {
-        //     v = Integer.min(maxH(state, depthAt++, depth, alpha, beta), v);
-        //     if(v <= alpha)
-        //         return v;
-        //     beta = Integer.min(beta, v);
-            
-        // }
-        // return v;
-
     }
 
-    public int maxH(State s, int depthAt, int depth, int alpha, int beta) {
-        int v = Integer.MIN_VALUE;
-        if(s.isTerminal()){
-            return utilityHTerminal(s, s.getPlayer(), s.getOpponent());
-        } 
-        else if (depthAt >= depth){
-            return UtilityH(s, s.getPlayer(), s.getOpponent());
+    /**
+     * returns true if the board is in a final state
+     * 
+     * @return
+     */
+    public boolean isTerminal() {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 0) {
+                    if (isLegalMove(i, j, new Player(1)))
+                        return false;
+                    if (isLegalMove(i, j, new Player(2)))
+                        return false;
+                }
+            }
         }
-        ArrayList<State> actions = getActions(s, s.getPlayer());
-        for(State state: actions) {  
-           v = Integer.max(v, minH(state, depthAt++, depth, alpha, beta));
-           if(v >= beta)
-            return v;
-           alpha = Integer.max(alpha, v); 
-        } 
-        return v;  
-        // int v = Integer.MIN_VALUE;
-        // if(s.isTerminal() || depthAt >= depth)
-        //     return UtilityH(s, s.getPlayer(), s.getOpponent());
-        // ArrayList<State> actions = getActions(s, s.getPlayer());
-        // for(State state: actions) {  
-        //    v = Integer.max(v, minH(state, depthAt++, depth, alpha, beta));
-        //    if(v >= beta)
-        //     return v;
-        //    alpha = Integer.max(alpha, v); 
-        // } 
-        // return v;  
+        return true;
     }
-
-    public static void main(String[] args) {
-        Player p1 = new Player(1);
-        Player p2 = new Player(2);
-        Reversi reversi = new Reversi(p1, p2, 8);
-        Scanner scanner = new Scanner(System.in);
-        reversi.getGameState().drawState();
-        int userX = 0;
-        int userY = 0;
-        while (!reversi.getGameState().isTerminal()) {
-            System.out.println("Enter x and y for your move");
-            userX = scanner.nextInt();
-            userY = scanner.nextInt();
-            if (reversi.getActions(reversi.getGameState(), reversi.getGameState().getPlayer()).isEmpty()) {
-                System.out.println("pass");
-                if (reversi.getGameState().getPlayer().getNumber() == 1)
-                    reversi.getGameState().setPlayer(p2);
-                else
-                    reversi.getGameState().setPlayer(p1);
-            } else
-                reversi.setState(reversi.makeMove(reversi.getGameState(), userX, userY, p1));
-            reversi.getGameState().drawState();
-            System.out.println();
-            if (reversi.getActions(reversi.getGameState(), reversi.getGameState().getPlayer()).isEmpty()) {
-                System.out.println("pass");
-                if (reversi.getGameState().getPlayer().getNumber() == 1)
-                    reversi.getGameState().setPlayer(p2);
-                else
-                    reversi.getGameState().setPlayer(p1);
-            } else
-                reversi.setState(reversi.minimaxH(reversi.getGameState(), 5));
-            reversi.getGameState().drawState();
+    // function that returns 1 if player 1 wins, 2 if player 2 wins, and 0 if it's a tie
+    public int getWinner() {
+        int p1 = 0;
+        int p2 = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 1)
+                    p1++;
+                if (board[i][j] == 2)
+                    p2++;
+            }
         }
-
+        if (p1 > p2)
+            return 1;
+        else if (p2 > p1)
+            return 2;
+        else
+            return 0;
     }
 
 }
