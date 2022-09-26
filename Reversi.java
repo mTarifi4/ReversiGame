@@ -2,7 +2,6 @@
 // handle illegal moves from user 
 // create random player 
 // fix interaction with user ( use his input and output format)
-// use utility terminal, multiply the score by 10000 
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -195,7 +194,7 @@ public class Reversi {
         }
         return 0;
     }
-// bro let's get out of here for the love of god
+
     public State minimax(State s) {
         ArrayList<State> actions = getActions(s, s.getPlayer());
         int max = Integer.MIN_VALUE;
@@ -240,9 +239,9 @@ public class Reversi {
         for (int i = 0; i < s.getBoard().length; i++) {
             for (int j = 0; j < s.getBoard().length; j++) {
                 if (s.getBoard()[i][j] == p1.getNumber())
-                    p1Counter += 10;
+                    p1Counter += 100;
                 else if (s.getBoard()[i][j] == p2.getNumber())
-                    p2Counter += 10;
+                    p2Counter += 100;
             }
         }
         // check the second layer of the board and takes a point off for every piece 
@@ -343,7 +342,7 @@ public class Reversi {
                     p2Counter += 1;
             }
         }
-        return p1Counter - p2Counter;
+        return 10000 * (p1Counter - p2Counter);
     }
 
     public State miniMaxHHelper(State s, int depthAt, int depth, int alpha, int beta) {
@@ -362,8 +361,12 @@ public class Reversi {
 
     public int minH(State s, int depthAt, int depth, int alpha, int beta) {
         int v = Integer.MAX_VALUE;
-        if (s.isTerminal() || depthAt >= depth)
+        if (s.isTerminal() ){
+            return utilityHTerminal(s, s.getPlayer(), s.getOpponent());
+        }
+        else if(depthAt >= depth){
             return UtilityH(s, s.getPlayer(), s.getOpponent());
+        }
         ArrayList<State> actions = getActions(s, s.getPlayer());
         for (State state : actions) {
             v = Integer.min(maxH(state, depthAt++, depth, alpha, beta), v);
@@ -373,13 +376,29 @@ public class Reversi {
             
         }
         return v;
+        // int v = Integer.MAX_VALUE;
+        // if (s.isTerminal() || depthAt >= depth)
+        //     return UtilityH(s, s.getPlayer(), s.getOpponent());
+        // ArrayList<State> actions = getActions(s, s.getPlayer());
+        // for (State state : actions) {
+        //     v = Integer.min(maxH(state, depthAt++, depth, alpha, beta), v);
+        //     if(v <= alpha)
+        //         return v;
+        //     beta = Integer.min(beta, v);
+            
+        // }
+        // return v;
 
     }
 
     public int maxH(State s, int depthAt, int depth, int alpha, int beta) {
         int v = Integer.MIN_VALUE;
-        if(s.isTerminal() || depthAt >= depth)
+        if(s.isTerminal()){
+            return utilityHTerminal(s, s.getPlayer(), s.getOpponent());
+        } 
+        else if (depthAt >= depth){
             return UtilityH(s, s.getPlayer(), s.getOpponent());
+        }
         ArrayList<State> actions = getActions(s, s.getPlayer());
         for(State state: actions) {  
            v = Integer.max(v, minH(state, depthAt++, depth, alpha, beta));
@@ -388,39 +407,50 @@ public class Reversi {
            alpha = Integer.max(alpha, v); 
         } 
         return v;  
+        // int v = Integer.MIN_VALUE;
+        // if(s.isTerminal() || depthAt >= depth)
+        //     return UtilityH(s, s.getPlayer(), s.getOpponent());
+        // ArrayList<State> actions = getActions(s, s.getPlayer());
+        // for(State state: actions) {  
+        //    v = Integer.max(v, minH(state, depthAt++, depth, alpha, beta));
+        //    if(v >= beta)
+        //     return v;
+        //    alpha = Integer.max(alpha, v); 
+        // } 
+        // return v;  
     }
 
     public static void main(String[] args) {
         Player p1 = new Player(1);
         Player p2 = new Player(2);
-        Reversi dude = new Reversi(p1, p2, 8);
+        Reversi reversi = new Reversi(p1, p2, 8);
         Scanner scanner = new Scanner(System.in);
-        dude.getGameState().drawState();
+        reversi.getGameState().drawState();
         int userX = 0;
         int userY = 0;
-        while (!dude.getGameState().isTerminal()) {
+        while (!reversi.getGameState().isTerminal()) {
             System.out.println("Enter x and y for your move");
             userX = scanner.nextInt();
             userY = scanner.nextInt();
-            if (dude.getActions(dude.getGameState(), dude.getGameState().getPlayer()).isEmpty()) {
+            if (reversi.getActions(reversi.getGameState(), reversi.getGameState().getPlayer()).isEmpty()) {
                 System.out.println("pass");
-                if (dude.getGameState().getPlayer().getNumber() == 1)
-                    dude.getGameState().setPlayer(p2);
+                if (reversi.getGameState().getPlayer().getNumber() == 1)
+                    reversi.getGameState().setPlayer(p2);
                 else
-                    dude.getGameState().setPlayer(p1);
+                    reversi.getGameState().setPlayer(p1);
             } else
-                dude.setState(dude.makeMove(dude.getGameState(), userX, userY, p1));
-            dude.getGameState().drawState();
+                reversi.setState(reversi.makeMove(reversi.getGameState(), userX, userY, p1));
+            reversi.getGameState().drawState();
             System.out.println();
-            if (dude.getActions(dude.getGameState(), dude.getGameState().getPlayer()).isEmpty()) {
+            if (reversi.getActions(reversi.getGameState(), reversi.getGameState().getPlayer()).isEmpty()) {
                 System.out.println("pass");
-                if (dude.getGameState().getPlayer().getNumber() == 1)
-                    dude.getGameState().setPlayer(p2);
+                if (reversi.getGameState().getPlayer().getNumber() == 1)
+                    reversi.getGameState().setPlayer(p2);
                 else
-                    dude.getGameState().setPlayer(p1);
+                    reversi.getGameState().setPlayer(p1);
             } else
-                dude.setState(dude.minimaxH(dude.getGameState(), 5));
-            dude.getGameState().drawState();
+                reversi.setState(reversi.minimaxH(reversi.getGameState(), 5));
+            reversi.getGameState().drawState();
         }
 
     }
