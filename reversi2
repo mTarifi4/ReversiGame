@@ -1,7 +1,7 @@
+
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.lang.Exception;
-// import the MiniMaxAlg class
 
 public class Reversi {
     private Player player1; // always ai
@@ -160,7 +160,7 @@ public class Reversi {
         return board;
     }
 
-    public ArrayList<State> getActions(State s, Player p) {
+    public static ArrayList<State> getActions(State s, Player p) {
         ArrayList<State> actions = new ArrayList<State>();
         for (int i = 0; i < s.getBoard().length; i++)
             for (int j = 0; j < s.getBoard()[0].length; j++)
@@ -189,7 +189,7 @@ public class Reversi {
         }
         return 0;
     }
-// bro let's get out of here for the love of god
+
     public State minimax(State s) {
         ArrayList<State> actions = getActions(s, s.getPlayer());
         int max = Integer.MIN_VALUE;
@@ -227,85 +227,48 @@ public class Reversi {
     }
 
     public int UtilityH (State s, Player p1, Player p2) {
-        // int p1Counter = 0;
-        // int p2Counter = 0;
-        // for (int i = 0; i < s.getBoard().length; i++) {
-        //     for (int j = 0; j < s.getBoard().length; j++) {
-        //         if (s.getBoard()[i][j] == 1)
-        //             p1Counter++;  
-        //         else if (s.getBoard()[i][j] == 2)
-        //             p2Counter++;
-        //     }
-        // }
-        // // check corner pieces and give 2 extra points for each corner piece
-        // if (s.getBoard()[0][0] == 1)
-        //     p1Counter += 2;
-        // else if (s.getBoard()[0][0] == 2)
-        //     p2Counter += 2;
-        // else if (s.getBoard()[0][s.getBoard().length - 1] == 1)
-        //     p1Counter += 2;
-        // else if (s.getBoard()[0][s.getBoard().length - 1] == 2)
-        //     p2Counter += 2;
-        // else if (s.getBoard()[s.getBoard().length - 1][0] == 1)
-        //     p1Counter += 2;
-        // else if (s.getBoard()[s.getBoard().length - 1][0] == 2)
-        //     p2Counter += 2;
-        // else if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 1)
-        //     p1Counter += 2;
-        // else if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 2)
-        //     p2Counter += 2;
-        
-        // // check for edge pieces 
-        // for (int i = 0; i < s.getBoard().length; i++) {
-        //     if (s.getBoard()[0][i] == 1)
-        //         p1Counter++;
-        //     else if (s.getBoard()[0][i] == 2)
-        //         p2Counter++;
-        //     else if (s.getBoard()[s.getBoard().length - 1][i] == 1)
-        //         p1Counter++;
-        //     else if (s.getBoard()[s.getBoard().length - 1][i] == 2)
-        //         p2Counter++;
-        //     else if (s.getBoard()[i][0] == 1)
-        //         p1Counter++;
-        //     else if (s.getBoard()[i][0] == 2)
-        //         p2Counter++;
-        //     else if (s.getBoard()[i][s.getBoard().length - 1] == 1)
-        //         p1Counter++;
-        //     else if (s.getBoard()[i][s.getBoard().length - 1] == 2)
-        //         p2Counter++;
-        // }
-        // return p2Counter - p1Counter;
         int p1Counter = 0;
         int p2Counter = 0;
+
+        // for every piece give 50 points to the player that owns it 
+        for (int i = 0; i < s.getBoard().length; i++) {
+            for (int j = 0; j < s.getBoard().length; j++) {
+                if (s.getBoard()[i][j] == p1.getNumber())
+                    p1Counter += 100;
+                else if (s.getBoard()[i][j] == p2.getNumber())
+                    p2Counter += 100;
+            }
+        }
         // check the second layer of the board and takes a point off for every piece 
         // that is the player's piece
         
         for (int j = 1; j < s.getBoard().length -1 ; j++) {
             int i = 1;
             if (s.getBoard()[i][j] == p1.getNumber())
-                p1Counter--;
+                p1Counter -= 750;
             else if (s.getBoard()[i][j] == p2.getNumber())
-                p2Counter--;
+                p2Counter -= 750;
         }
         
         // check the second to last layer of the board and takes a point off for every piece
         // that is the player's piece
-        for (int i = s.getBoard().length - 1; i < s.getBoard().length ; i++) {
-            for (int j = 1; j < s.getBoard().length - 1; j++) {
+       
+        for (int j = 1; j < s.getBoard().length - 1; j++) {
+                int i = s.getBoard().length - 2;
                 if (s.getBoard()[i][j] == p1.getNumber())
-                    p1Counter--;
+                    p1Counter -= 750;
                 else if (s.getBoard()[i][j] == p2.getNumber())
-                    p2Counter--;
+                    p2Counter -= 750;
             }
-        }
+        
         // check the second layer of the board and takes a point off for every piece
         // that is the player's piece
         for (int i = 1; i < s.getBoard().length - 1; i++) {
             int j = 1; 
             if (s.getBoard()[i][j] == p1.getNumber())
-                p1Counter--;
+                p1Counter -= 750;
             else if (s.getBoard()[i][j] == p2.getNumber())
-                p2Counter--;
+                p2Counter -= 750;
             
         }
         // check the second to last layer of the board and takes a point off for every piece
@@ -313,52 +276,68 @@ public class Reversi {
         for (int i = 1; i < s.getBoard().length - 1; i++) {
             int j = s.getBoard().length - 2;
             if (s.getBoard()[i][j] == p1.getNumber())
-                p1Counter--;
+                p1Counter -= 750;
             else if (s.getBoard()[i][j] == p2.getNumber())
-                p2Counter--;
+                p2Counter -= 750;
         }
         // check corner pieces and give 2 extra points for each corner piece
         if (s.getBoard()[0][0] == 1)
-            p1Counter += 4;
-        else if (s.getBoard()[0][0] == 2)
-            p2Counter += 4;
-        else if (s.getBoard()[0][s.getBoard().length - 1] == 1)
-            p1Counter += 4;
-        else if (s.getBoard()[0][s.getBoard().length - 1] == 2)
-            p2Counter += 4;
-        else if (s.getBoard()[s.getBoard().length - 1][0] == 1)
-            p1Counter += 4;
-        else if (s.getBoard()[s.getBoard().length - 1][0] == 2)
-            p2Counter += 4;
-        else if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 1)
-            p1Counter += 4;
-        else if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 2)
-            p2Counter += 4;
+            p1Counter += 2500;
+        if (s.getBoard()[0][0] == 2)
+            p2Counter += 2500;
+        if (s.getBoard()[0][s.getBoard().length - 1] == 1)
+            p1Counter += 2500;
+        if (s.getBoard()[0][s.getBoard().length - 1] == 2)
+            p2Counter += 2500;
+        if (s.getBoard()[s.getBoard().length - 1][0] == 1)
+            p1Counter += 2500;
+        if (s.getBoard()[s.getBoard().length - 1][0] == 2)
+            p2Counter += 2500;
+        if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 1)
+            p1Counter += 2500;
+        if (s.getBoard()[s.getBoard().length - 1][s.getBoard().length - 1] == 2)
+            p2Counter += 2500;
         
         // check for edge pieces 
         for (int i = 0; i < s.getBoard().length; i++) {
             if (s.getBoard()[0][i] == 1)
-                p1Counter++;
-            else if (s.getBoard()[0][i] == 2)
-                p2Counter++;
-            else if (s.getBoard()[s.getBoard().length - 1][i] == 1)
-                p1Counter++;
-            else if (s.getBoard()[s.getBoard().length - 1][i] == 2)
-                p2Counter++;
-            else if (s.getBoard()[i][0] == 1)
-                p1Counter++;
-            else if (s.getBoard()[i][0] == 2)
-                p2Counter++;
-            else if (s.getBoard()[i][s.getBoard().length - 1] == 1)
-                p1Counter++;
-            else if (s.getBoard()[i][s.getBoard().length - 1] == 2)
-                p2Counter++;
+                p1Counter += 200;
+            if (s.getBoard()[0][i] == 2)
+                p2Counter += 200;
+            if (s.getBoard()[s.getBoard().length - 1][i] == 1)
+                p1Counter += 200;
+            if (s.getBoard()[s.getBoard().length - 1][i] == 2)
+                p2Counter += 200;
+            if (s.getBoard()[i][0] == 1)
+                p1Counter += 200;
+            if (s.getBoard()[i][0] == 2)
+                p2Counter += 200;
+            if (s.getBoard()[i][s.getBoard().length - 1] == 1)
+                p1Counter += 200;
+            if (s.getBoard()[i][s.getBoard().length - 1] == 2)
+                p2Counter += 200;
         }
         return p1Counter - p2Counter;
     }
     //implement minimax algorithm with depth limit 
     public State minimaxH(State s, int depth) {
         return miniMaxHHelper(s, 0, depth, Integer.MIN_VALUE, Integer.MAX_VALUE); 
+    }
+    // function utilityHTerminal (s, p1, p2) returns the score of the state s for the player p1
+    public int utilityHTerminal (State s, Player p1, Player p2){
+        int p1Counter = 0;
+        int p2Counter = 0;
+
+       
+        for (int i = 0; i < s.getBoard().length; i++) {
+            for (int j = 0; j < s.getBoard().length; j++) {
+                if (s.getBoard()[i][j] == p1.getNumber())
+                    p1Counter += 1;
+                else if (s.getBoard()[i][j] == p2.getNumber())
+                    p2Counter += 1;
+            }
+        }
+        return 10000 * (p1Counter - p2Counter);
     }
 
     public State miniMaxHHelper(State s, int depthAt, int depth, int alpha, int beta) {
@@ -377,8 +356,12 @@ public class Reversi {
 
     public int minH(State s, int depthAt, int depth, int alpha, int beta) {
         int v = Integer.MAX_VALUE;
-        if (s.isTerminal() || depthAt >= depth)
-            return UtilityH(s, new Player(2), new Player(1));
+        if (s.isTerminal() ){
+            return utilityHTerminal(s, s.getPlayer(), s.getOpponent());
+        }
+        else if(depthAt >= depth){
+            return UtilityH(s, s.getPlayer(), s.getOpponent());
+        }
         ArrayList<State> actions = getActions(s, s.getPlayer());
         for (State state : actions) {
             v = Integer.min(maxH(state, depthAt++, depth, alpha, beta), v);
@@ -388,12 +371,18 @@ public class Reversi {
             
         }
         return v;
+        
+
     }
 
     public int maxH(State s, int depthAt, int depth, int alpha, int beta) {
         int v = Integer.MIN_VALUE;
-        if(s.isTerminal() || depthAt >= depth)
+        if(s.isTerminal()){
+            return utilityHTerminal(s, s.getPlayer(), s.getOpponent());
+        } 
+        else if (depthAt >= depth){
             return UtilityH(s, s.getPlayer(), s.getOpponent());
+        }
         ArrayList<State> actions = getActions(s, s.getPlayer());
         for(State state: actions) {  
            v = Integer.max(v, minH(state, depthAt++, depth, alpha, beta));
@@ -402,17 +391,14 @@ public class Reversi {
            alpha = Integer.max(alpha, v); 
         } 
         return v;  
+        
     }
-
-
-
     public void runMiniMaxComputer(Reversi board) {
         while(true) {
 
 
         }
     }
-
     public void runMiniMaxHuman(Reversi board) {
         Scanner scanner = new Scanner(System.in);
         while(!board.getGameState().isTerminal()) {
@@ -485,35 +471,36 @@ public class Reversi {
     public static void main(String[] args) {
         Player p1 = new Player(1);
         Player p2 = new Player(2);
-        Reversi dude = new Reversi(p1, p2, 8);
+        Reversi reversi = new Reversi(p1, p2, 8);
         Scanner scanner = new Scanner(System.in);
-        dude.getGameState().drawState();
+        reversi.getGameState().drawState();
         int userX = 0;
         int userY = 0;
-        while (!dude.getGameState().isTerminal()) {
+        while (!reversi.getGameState().isTerminal()) {
             System.out.println("Enter x and y for your move");
             userX = scanner.nextInt();
             userY = scanner.nextInt();
-            if (dude.getActions(dude.getGameState(), dude.getGameState().getPlayer()).isEmpty()) {
+            if (reversi.getActions(reversi.getGameState(), reversi.getGameState().getPlayer()).isEmpty()) {
                 System.out.println("pass");
-                if (dude.getGameState().getPlayer().getNumber() == 1)
-                    dude.getGameState().setPlayer(p2);
+                if (reversi.getGameState().getPlayer().getNumber() == 1)
+                    reversi.getGameState().setPlayer(p2);
                 else
-                    dude.getGameState().setPlayer(p1);
+                    reversi.getGameState().setPlayer(p1);
             } else
-                dude.setState(dude.makeMove(dude.getGameState(), userX, userY, p1));
-            dude.getGameState().drawState();
+                reversi.setState(reversi.makeMove(reversi.getGameState(), userX, userY, p1));
+            reversi.getGameState().drawState();
             System.out.println();
-            if (dude.getActions(dude.getGameState(), dude.getGameState().getPlayer()).isEmpty()) {
+            if (reversi.getActions(reversi.getGameState(), reversi.getGameState().getPlayer()).isEmpty()) {
                 System.out.println("pass");
-                if (dude.getGameState().getPlayer().getNumber() == 1)
-                    dude.getGameState().setPlayer(p2);
+                if (reversi.getGameState().getPlayer().getNumber() == 1)
+                    reversi.getGameState().setPlayer(p2);
                 else
-                    dude.getGameState().setPlayer(p1);
+                    reversi.getGameState().setPlayer(p1);
             } else
-                dude.setState(dude.minimaxH(dude.getGameState(), 6));
-            dude.getGameState().drawState();
+                reversi.setState(reversi.minimaxH(reversi.getGameState(), 5));
+            reversi.getGameState().drawState();
         }
+        scanner.close();
 
     }
 
