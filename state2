@@ -203,15 +203,35 @@ public class State {
     }
 
     /**
-     * draw the board
+     * draw the board with the current state and indecies around the board
+     * first row is the indecies of the columns and the first column is 0 to 7
+     * last row is the indecies of the columns and the last column is 0 to 7
      */
+     
     public void drawState() {
+        int [][] boardToPrint = new int [board.length + 1 ][board[0].length + 1 ];
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
-                System.out.printf("%d  ", board[i][j]);
+                boardToPrint[i + 1][j + 1] = board[i][j];
             }
-            System.out.println("\n");
+            
         }
+
+        for (int i = 0; i < boardToPrint[0].length; i++) {
+            boardToPrint[0][i] = i - 1;
+        }
+
+        for (int i = 0; i < boardToPrint.length; i++) {
+            boardToPrint[i][0] = i - 1;
+        }
+
+        for (int i = 0; i < boardToPrint.length; i++) {
+            for (int j = 0; j < boardToPrint[0].length; j++) {
+                System.out.print(boardToPrint[i][j] + " ");
+            }
+            System.out.println();
+        }
+
     }
 
     /**
